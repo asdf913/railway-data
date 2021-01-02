@@ -1,7 +1,10 @@
 package org.apache.commons.lang3;
 
 import java.io.File;
+import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.OutputStream;
+import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Member;
 import java.lang.reflect.Method;
@@ -18,6 +21,11 @@ import java.util.stream.Stream;
 import javax.script.ScriptException;
 
 import org.apache.commons.lang3.CrhStation.Station;
+import org.apache.poi.ss.usermodel.Cell;
+import org.apache.poi.ss.usermodel.Row;
+import org.apache.poi.ss.usermodel.Sheet;
+import org.apache.poi.ss.usermodel.Workbook;
+import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 
 import com.fasterxml.jackson.annotation.JsonAutoDetect;
 import com.fasterxml.jackson.annotation.PropertyAccessor;
@@ -118,6 +126,75 @@ public class CrhStationExporter {
 		objectMapper.setVisibility(PropertyAccessor.FIELD, JsonAutoDetect.Visibility.ANY);
 		objectMapper.writeValue(file, stations);
 		//
+	}
+
+	private static void xlsx(final File file, final List<Station> stations) throws IllegalAccessException, IOException {
+		//
+		Workbook wb = null;
+		//
+		final Field[] fs = Station.class.getDeclaredFields();
+		//
+		Station station = null;
+		Sheet sheet = null;
+		Row row = null;
+		//
+		Field f = null;
+		//
+		for (int i = 0; stations != null && i < stations.size(); i++) {
+			//
+			if ((station = stations.get(i)) == null) {
+				continue;
+			}
+			//
+			if (wb == null && (row = createRow(sheet = (wb = new XSSFWorkbook()).createSheet(),
+					sheet.getPhysicalNumberOfRows())) != null) {
+				for (int j = 0; fs != null && j < fs.length; j++) {
+					setCellValue(row.createCell(j), getName(fs[j]));
+				} // for
+			}
+			//
+			row = createRow(sheet, sheet.getPhysicalNumberOfRows());
+			//
+			for (int j = 0; fs != null && j < fs.length; j++) {
+				//
+				if ((f = fs[j]) == null) {
+					continue;
+				}
+				//
+				if (!f.isAccessible()) {
+					f.setAccessible(true);
+				}
+				//
+				setCellValue(row.createCell(j), toString(f.get(station)));
+				//
+			} // for
+				//
+		} // for
+			//
+		if (wb != null) {
+			//
+			try (final OutputStream os = file != null ? new FileOutputStream(file) : null) {
+				if (os != null) {
+					wb.write(os);
+				}
+			} // try
+				//
+		} // if
+			//
+	}
+
+	private static String toString(final Object instance) {
+		return instance != null ? instance.toString() : null;
+	}
+
+	private static Row createRow(final Sheet instance, final int rownum) {
+		return instance != null ? instance.createRow(rownum) : null;
+	}
+
+	private static void setCellValue(final Cell instance, final String value) {
+		if (instance != null) {
+			instance.setCellValue(value);
+		}
 	}
 
 }
