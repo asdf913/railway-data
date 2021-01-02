@@ -15,6 +15,7 @@
 	<modules>
 		<module>crh-station</module>
 		<module>data-exporter</module>
+		<module>tokyo-metro-station</module>
 	</modules>
 	<dependencies>
 		<!-- https://mvnrepository.com/artifact/org.junit.jupiter/junit-jupiter-api -->
