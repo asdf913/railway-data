@@ -22,7 +22,7 @@ public class TokyoMetroStation {
 
 	private static final Logger LOG = LoggerFactory.getLogger(TokyoMetroStation.class);
 
-	private static class Station {
+	public static class Station {
 
 		private String name, hiragana = null;
 
