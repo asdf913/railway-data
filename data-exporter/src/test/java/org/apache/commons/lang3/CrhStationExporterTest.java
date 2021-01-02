@@ -1,7 +1,5 @@
 package org.apache.commons.lang3;
 
-import static org.junit.jupiter.api.Assertions.*;
-
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Member;
 import java.lang.reflect.Method;
