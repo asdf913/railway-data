@@ -16,7 +16,7 @@ import org.apache.commons.io.IOUtils;
 
 public class CrhStation {
 
-	private static class Station {
+	static class Station {
 
 		private String pinyin, telegraphCode, chineseName, englishName, pinyinAbbreviation = null;
 
