@@ -9,6 +9,7 @@ import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Member;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
+import java.net.URL;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Date;
@@ -144,6 +145,8 @@ public class OsakaMetroStationExporter {
 		//
 		Field f = null;
 		//
+		ObjectMapper objectMapper = null;
+		//
 		for (int i = 0; stations != null && i < stations.size(); i++) {
 			//
 			if ((station = stations.get(i)) == null) {
@@ -177,7 +180,12 @@ public class OsakaMetroStationExporter {
 					f.setAccessible(true);
 				}
 				//
-				setCellValue(row.createCell(j), toString(f.get(station)));
+				if (objectMapper == null) {
+					(objectMapper = new ObjectMapper()).setVisibility(PropertyAccessor.FIELD,
+							JsonAutoDetect.Visibility.ANY);
+				}
+				//
+				setCellValue(row.createCell(j), toString(objectMapper, f.get(station)));
 				//
 			} // for
 				//
@@ -195,8 +203,16 @@ public class OsakaMetroStationExporter {
 			//
 	}
 
-	private static String toString(final Object instance) {
-		return instance != null ? instance.toString() : null;
+	private static String toString(final ObjectMapper objectMapper, final Object instance) throws IOException {
+		//
+		if (instance == null) {
+			return null;
+		} else if (instance instanceof String || instance instanceof URL) {
+			return instance.toString();
+		}
+		//
+		return objectMapper != null ? objectMapper.writeValueAsString(instance) : instance.toString();
+		//
 	}
 
 	private static Row createRow(final Sheet instance, final int rownum) {

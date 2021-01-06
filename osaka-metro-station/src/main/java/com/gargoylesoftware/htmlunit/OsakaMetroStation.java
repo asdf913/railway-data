@@ -8,7 +8,9 @@ import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
+import org.apache.commons.lang3.ArrayUtils;
 import org.apache.commons.lang3.ObjectUtils;
 import org.apache.commons.lang3.SerializationUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -34,6 +36,16 @@ public class OsakaMetroStation {
 		private String code, name, line = null;
 
 		private URL url = null;
+
+		private List<TransferRoute> transferRoutes = null;
+
+	}
+
+	public static class TransferRoute {
+
+		private String line = null;
+
+		private Boolean thirdParty = null;
 
 	}
 
@@ -179,6 +191,39 @@ public class OsakaMetroStation {
 		final Station station = new Station();
 		//
 		station.line = getTextContent(querySelector(htmlPage, ".cs-lineName"));
+		//
+		final DomNode ul = cast(DomNode.class, querySelector(htmlPage, ".transferList.clfix"));
+		final DomNodeList<DomNode> domNodeList = querySelectorAll(ul, "li");
+		//
+		DomNode domNode = null;
+		NamedNodeMap attributes = null;
+		//
+		List<TransferRoute> transferRoutes = null;
+		TransferRoute transferRoute = null;
+		//
+		for (int i = 0; domNodeList != null && i < domNodeList.getLength(); i++) {
+			//
+			if ((domNode = domNodeList.get(i)) == null || (attributes = domNode.getAttributes()) == null) {
+				continue;
+			}
+			//
+			if (Objects
+					.equals(Boolean.TRUE,
+							(transferRoute = new TransferRoute()).thirdParty = Boolean.valueOf(ArrayUtils.contains(
+									StringUtils.split(getTextContent(attributes.getNamedItem("class")), ' '),
+									"thirdParty")))) {
+				transferRoute.line = getTextContent(domNode);
+			} else {
+				transferRoute.line = getTextContent(querySelector(domNode, ".cs-transferListLine"));
+			}
+			//
+			if ((transferRoutes = ObjectUtils.getIfNull(transferRoutes, ArrayList::new)) != null) {
+				transferRoutes.add(transferRoute);
+			}
+			//
+		} // for
+			//
+		station.transferRoutes = transferRoutes;
 		//
 		return station;
 		//
