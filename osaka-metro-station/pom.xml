@@ -7,7 +7,7 @@
 		<artifactId>railway-data-parent</artifactId>
 		<version>0.0.1-SNAPSHOT</version>
 	</parent>
-	<artifactId>tokyo-metro-station</artifactId>
+	<artifactId>osaka-metro-station</artifactId>
 	<dependencies>
 		<!-- https://mvnrepository.com/artifact/net.sourceforge.htmlunit/htmlunit -->
 		<dependency>
