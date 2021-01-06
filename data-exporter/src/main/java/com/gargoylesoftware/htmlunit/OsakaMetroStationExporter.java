@@ -133,7 +133,10 @@ public class OsakaMetroStationExporter {
 		//
 		Workbook wb = null;
 		//
-		final Field[] fs = Station.class.getDeclaredFields();
+		final List<Field> fs = collect(
+				filter(stream(Station.class.getDeclaredFields()),
+						f -> f != null && !(Modifier.isFinal(f.getModifiers()) && Modifier.isStatic(f.getModifiers()))),
+				Collectors.toList());
 		//
 		Station station = null;
 		Sheet sheet = null;
@@ -150,9 +153,9 @@ public class OsakaMetroStationExporter {
 			if (wb == null && (row = createRow(sheet = (wb = new XSSFWorkbook()).createSheet(),
 					sheet.getPhysicalNumberOfRows())) != null) {
 				//
-				for (int j = 0; fs != null && j < fs.length; j++) {
+				for (int j = 0; fs != null && j < fs.size(); j++) {
 					//
-					if ((f = fs[j]) == null || Modifier.isFinal(f.getModifiers())) {
+					if ((f = fs.get(j)) == null || Modifier.isFinal(f.getModifiers())) {
 						continue;
 					}
 					//
@@ -164,9 +167,9 @@ public class OsakaMetroStationExporter {
 				//
 			row = createRow(sheet, sheet.getPhysicalNumberOfRows());
 			//
-			for (int j = 0; fs != null && j < fs.length; j++) {
+			for (int j = 0; fs != null && j < fs.size(); j++) {
 				//
-				if ((f = fs[j]) == null || Modifier.isFinal(f.getModifiers())) {
+				if ((f = fs.get(j)) == null || Modifier.isFinal(f.getModifiers())) {
 					continue;
 				}
 				//

@@ -97,8 +97,9 @@ public class OsakaMetroStation {
 			final URL url = htmlPage != null
 					? HtmlAnchor.getTargetUrl(getTextContent(getNamedItem(attributes, "href")), htmlPage)
 					: null;
+			//
 			if ((station.url = url) != null) {
-				station = merge(station, toStation(webClient, url));
+				station = ObjectUtils.defaultIfNull(merge(station, toStation(webClient, url)), station);
 			}
 			//
 		} catch (final MalformedURLException e) {
@@ -106,13 +107,18 @@ public class OsakaMetroStation {
 		}
 		//
 		final String[] ss = StringUtils.split(getTextContent(getNamedItem(attributes, "alt")), ' ');
+		final String[] fieldNames = new String[] { "code", "name" };
 		//
-		for (int i = 0; ss != null && i < ss.length; i++) {
-			if (i == 0) {
-				station.code = ss[i];
-			} else if (i == 1) {
-				station.name = ss[i];
+		for (int i = 0; ss != null && i < ss.length && station != null; i++) {
+			//
+			try {
+				if (i < fieldNames.length) {
+					FieldUtils.writeField(station, fieldNames[i], ss[i], true);
+				}
+			} catch (final IllegalAccessException e) {
+				LOG.error(e.getMessage(), e);
 			}
+			//
 		}
 		//
 		return station;
@@ -156,20 +162,8 @@ public class OsakaMetroStation {
 
 	private static Station toStation(final WebClient webClient, final URL url) throws IOException {
 		//
-//		Station station = null;
-		//
-//		try (final WebClient webClient = new WebClient()) {
-//			//
-//			final WebClientOptions webClientOptions = webClient.getOptions();
-//			if (webClientOptions != null) {
-//				webClientOptions.setJavaScriptEnabled(false);
-//			}
-		//
-//		station = toStation(cast(HtmlPage.class, webClient != null ? webClient.getPage(url) : null));
-		//
-//		} // try
-		//
 		final Page page = webClient != null ? webClient.getPage(url) : null;
+		//
 		try {
 			return toStation(cast(HtmlPage.class, page));
 		} finally {
