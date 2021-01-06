@@ -8,6 +8,7 @@ import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Member;
 import java.lang.reflect.Method;
+import java.lang.reflect.Modifier;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Date;
@@ -148,16 +149,24 @@ public class OsakaMetroStationExporter {
 			//
 			if (wb == null && (row = createRow(sheet = (wb = new XSSFWorkbook()).createSheet(),
 					sheet.getPhysicalNumberOfRows())) != null) {
+				//
 				for (int j = 0; fs != null && j < fs.length; j++) {
-					setCellValue(row.createCell(j), getName(fs[j]));
+					//
+					if ((f = fs[j]) == null || Modifier.isFinal(f.getModifiers())) {
+						continue;
+					}
+					//
+					setCellValue(row.createCell(j), getName(f));
+					//
 				} // for
-			}
-			//
+					//
+			} // if
+				//
 			row = createRow(sheet, sheet.getPhysicalNumberOfRows());
 			//
 			for (int j = 0; fs != null && j < fs.length; j++) {
 				//
-				if ((f = fs[j]) == null) {
+				if ((f = fs[j]) == null || Modifier.isFinal(f.getModifiers())) {
 					continue;
 				}
 				//
