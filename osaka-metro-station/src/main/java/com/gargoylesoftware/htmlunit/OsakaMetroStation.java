@@ -191,15 +191,20 @@ public class OsakaMetroStation {
 		final Station station = new Station();
 		//
 		station.line = getTextContent(querySelector(htmlPage, ".cs-lineName"));
+		station.transferRoutes = toTransferRoutes(
+				querySelectorAll(cast(DomNode.class, querySelector(htmlPage, ".transferList.clfix")), "li"));
 		//
-		final DomNode ul = cast(DomNode.class, querySelector(htmlPage, ".transferList.clfix"));
-		final DomNodeList<DomNode> domNodeList = querySelectorAll(ul, "li");
+		return station;
 		//
-		DomNode domNode = null;
-		NamedNodeMap attributes = null;
+	}
+
+	private static List<TransferRoute> toTransferRoutes(final DomNodeList<DomNode> domNodeList) {
 		//
 		List<TransferRoute> transferRoutes = null;
 		TransferRoute transferRoute = null;
+		//
+		DomNode domNode = null;
+		NamedNodeMap attributes = null;
 		//
 		String[] classes = null;
 		//
@@ -226,9 +231,7 @@ public class OsakaMetroStation {
 			//
 		} // for
 			//
-		station.transferRoutes = transferRoutes;
-		//
-		return station;
+		return transferRoutes;
 		//
 	}
 
