@@ -45,7 +45,7 @@ public class OsakaMetroStation {
 
 		private String line = null;
 
-		private Boolean thirdParty = null;
+		private Boolean thirdParty, brt = null;
 
 	}
 
@@ -201,21 +201,24 @@ public class OsakaMetroStation {
 		List<TransferRoute> transferRoutes = null;
 		TransferRoute transferRoute = null;
 		//
+		String[] classes = null;
+		//
 		for (int i = 0; domNodeList != null && i < domNodeList.getLength(); i++) {
 			//
 			if ((domNode = domNodeList.get(i)) == null || (attributes = domNode.getAttributes()) == null) {
 				continue;
 			}
 			//
-			if (Objects
-					.equals(Boolean.TRUE,
-							(transferRoute = new TransferRoute()).thirdParty = Boolean.valueOf(ArrayUtils.contains(
-									StringUtils.split(getTextContent(attributes.getNamedItem("class")), ' '),
-									"thirdParty")))) {
+			if (Objects.equals(Boolean.TRUE,
+					(transferRoute = new TransferRoute()).thirdParty = Boolean.valueOf(ArrayUtils.contains(
+							classes = StringUtils.split(getTextContent(attributes.getNamedItem("class")), ' '),
+							"thirdParty")))) {
 				transferRoute.line = getTextContent(domNode);
 			} else {
 				transferRoute.line = getTextContent(querySelector(domNode, ".cs-transferListLine"));
 			}
+			//
+			transferRoute.brt = ArrayUtils.contains(classes, "thirdParty-brt");
 			//
 			if ((transferRoutes = ObjectUtils.getIfNull(transferRoutes, ArrayList::new)) != null) {
 				transferRoutes.add(transferRoute);
