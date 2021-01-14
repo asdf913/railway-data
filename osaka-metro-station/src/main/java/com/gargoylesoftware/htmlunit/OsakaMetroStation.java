@@ -39,6 +39,8 @@ public class OsakaMetroStation {
 
 		private List<TransferRoute> transferRoutes = null;
 
+		private List<String> facilities = null;
+
 	}
 
 	public static class TransferRoute {
@@ -193,8 +195,35 @@ public class OsakaMetroStation {
 		station.line = getTextContent(querySelector(htmlPage, ".cs-lineName"));
 		station.transferRoutes = toTransferRoutes(
 				querySelectorAll(cast(DomNode.class, querySelector(htmlPage, ".transferList.clfix")), "li"));
+		station.facilities = toFacilities(htmlPage);
 		//
 		return station;
+		//
+	}
+
+	private static List<String> toFacilities(final DomNode instance) {
+		//
+		List<String> facilities = null;
+		//
+		final DomNodeList<DomNode> domNodeList = querySelectorAll(instance, ".LegendArea_item");
+		//
+		DomNode domNode = null;
+		//
+		for (int i = 0; domNodeList != null && i < domNodeList.getLength(); i++) {
+			//
+			if ((domNode = domNodeList.get(i)) == null) {
+				continue;
+			}
+			//
+			if (facilities == null) {
+				facilities = new ArrayList<>();
+			}
+			//
+			facilities.add(StringUtils.trim(getTextContent(domNode)));
+			//
+		} // for
+			//
+		return facilities;
 		//
 	}
 
