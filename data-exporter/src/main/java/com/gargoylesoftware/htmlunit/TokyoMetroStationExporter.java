@@ -23,6 +23,7 @@ import javax.script.ScriptException;
 import org.apache.poi.ss.usermodel.Cell;
 import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.ss.usermodel.Sheet;
+import org.apache.poi.ss.usermodel.SheetUtil;
 import org.apache.poi.ss.usermodel.Workbook;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 
@@ -171,6 +172,8 @@ public class TokyoMetroStationExporter {
 				//
 		} // for
 			//
+		SheetUtil.setAutoFilter(sheet);
+		//
 		if (wb != null) {
 			//
 			try (final OutputStream os = file != null ? new FileOutputStream(file) : null) {
