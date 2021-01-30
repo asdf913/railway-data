@@ -25,6 +25,7 @@ import org.apache.poi.ss.usermodel.Cell;
 import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.ss.usermodel.Sheet;
 import org.apache.poi.ss.usermodel.Workbook;
+import org.apache.poi.ss.util.CellRangeAddress;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 
 import com.fasterxml.jackson.annotation.JsonAutoDetect;
@@ -171,6 +172,25 @@ public class CrhStationExporter {
 				//
 		} // for
 			//
+		if (sheet != null) {
+			//
+			final int physicalNumberOfRows = sheet.getPhysicalNumberOfRows();
+			//
+			int maxCellCount = 0;
+			//
+			for (int i = 0; i < physicalNumberOfRows; i++) {
+				//
+				if ((row = sheet.getRow(i)) == null) {
+					continue;
+				}
+				maxCellCount = Integer.max(maxCellCount, row.getLastCellNum() - row.getFirstCellNum());
+				//
+			}
+			//
+			sheet.setAutoFilter(new CellRangeAddress(0, sheet.getLastRowNum(), 0, maxCellCount));
+			//
+		}
+		//
 		if (wb != null) {
 			//
 			try (final OutputStream os = file != null ? new FileOutputStream(file) : null) {
