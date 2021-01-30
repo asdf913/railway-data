@@ -149,16 +149,24 @@ public class CrhStationExporter {
 			//
 			if (wb == null && (row = createRow(sheet = (wb = new XSSFWorkbook()).createSheet(),
 					sheet.getPhysicalNumberOfRows())) != null) {
+				//
 				for (int j = 0; fs != null && j < fs.length; j++) {
-					setCellValue(row.createCell(j), getName(fs[j]));
+					//
+					if ((f = fs[j]) == null || f.isSynthetic()) {
+						continue;
+					}
+					//
+					setCellValue(row.createCell(j), getName(f));
+					//
 				} // for
+					//
 			}
 			//
 			row = createRow(sheet, sheet.getPhysicalNumberOfRows());
 			//
 			for (int j = 0; fs != null && j < fs.length; j++) {
 				//
-				if ((f = fs[j]) == null) {
+				if ((f = fs[j]) == null || f.isSynthetic()) {
 					continue;
 				}
 				//
