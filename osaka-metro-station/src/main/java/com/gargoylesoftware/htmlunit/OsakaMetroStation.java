@@ -176,10 +176,12 @@ public class OsakaMetroStation {
 
 	private static Station toStation(final WebClient webClient, final URL url) throws IOException {
 		//
-		final Page page = webClient != null ? webClient.getPage(url) : null;
+		Page page = null;
 		//
 		try {
-			return toStation(cast(HtmlPage.class, page));
+			return toStation(cast(HtmlPage.class, page = webClient != null ? webClient.getPage(url) : null));
+		} catch (final FailingHttpStatusCodeException e) {
+			return null;
 		} finally {
 			if (page != null) {
 				page.cleanUp();
