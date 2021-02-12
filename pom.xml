@@ -17,6 +17,7 @@
 		<module>data-exporter</module>
 		<module>tokyo-metro-station</module>
 		<module>osaka-metro-station</module>
+		<module>hankyu-station</module>
 	</modules>
 	<dependencies>
 		<!-- https://mvnrepository.com/artifact/org.junit.jupiter/junit-jupiter-api -->
