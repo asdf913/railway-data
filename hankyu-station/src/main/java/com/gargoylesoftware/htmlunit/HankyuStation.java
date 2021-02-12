@@ -16,6 +16,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.w3c.dom.Node;
 
+import com.gargoylesoftware.htmlunit.html.DomElement;
 import com.gargoylesoftware.htmlunit.html.DomNode;
 import com.gargoylesoftware.htmlunit.html.DomNodeList;
 import com.gargoylesoftware.htmlunit.html.HtmlAnchor;
@@ -33,6 +34,8 @@ public class HankyuStation {
 		private String code, name, hiragana = null;
 
 		private URL url = null;
+
+		private List<String> equipments = null;
 
 	}
 
@@ -160,12 +163,62 @@ public class HankyuStation {
 		//
 		Station station = null;
 		//
-		final HtmlImage htmlImage = cast(HtmlImage.class, querySelector(htmlPage, "#section_h1 img"));
+		HtmlImage htmlImage = cast(HtmlImage.class, querySelector(htmlPage, "#section_h1 img"));
 		if (htmlImage != null) {
 			(station = new Station()).code = StringUtils.substringAfter(htmlImage.getAltAttribute(), ' ');
 		}
 		//
+		if (station == null) {
+			station = new Station();
+		}
+		station.equipments = getEquipments(htmlPage);
+		//
 		return station;
+		//
+	}
+
+	private static List<String> getEquipments(final DomNode input) {
+		//
+		List<String> equipments = null;
+		//
+		final DomNode domNode = querySelector(input, ".section_h3:nth-child(1)");
+		final DomElement nextElementSibling = domNode != null ? domNode.getNextElementSibling() : null;
+		final Iterable<DomElement> childElements = nextElementSibling != null ? nextElementSibling.getChildElements()
+				: null;
+		//
+		if (childElements != null) {
+			//
+			List<DomNode> childNodes = null;
+			String altAttribute = null;
+			HtmlImage htmlImage = null;
+			//
+			for (final DomElement childElement : childElements) {
+				//
+				if (childElement == null) {
+					continue;
+				}
+				//
+				for (int i = 0; (childNodes = childElement.getChildNodes()) != null && i < childNodes.size(); i++) {
+					//
+					if ((htmlImage = cast(HtmlImage.class, childNodes.get(0))) == null) {
+						continue;
+					}
+					//
+					if (equipments == null) {
+						equipments = new ArrayList<>();
+					}
+					//
+					if (!equipments.contains(altAttribute = htmlImage.getAltAttribute())) {
+						equipments.add(altAttribute);
+					}
+					//
+				}
+				//
+			} // for
+				//
+		} // if
+			//
+		return equipments;
 		//
 	}
 
