@@ -35,7 +35,7 @@ public class HankyuStation {
 
 		private URL url = null;
 
-		private List<String> equipments = null;
+		private List<String> equipments, serviceFacilities = null;
 
 	}
 
@@ -172,6 +172,7 @@ public class HankyuStation {
 			station = new Station();
 		}
 		station.equipments = getEquipments(htmlPage);
+		station.serviceFacilities = getServiceFacilities(htmlPage);
 		//
 		return station;
 		//
@@ -181,10 +182,8 @@ public class HankyuStation {
 		//
 		List<String> equipments = null;
 		//
-		final DomNode domNode = querySelector(input, ".section_h3:nth-child(1)");
-		final DomElement nextElementSibling = domNode != null ? domNode.getNextElementSibling() : null;
-		final Iterable<DomElement> childElements = nextElementSibling != null ? nextElementSibling.getChildElements()
-				: null;
+		final Iterable<DomElement> childElements = getChildElements(
+				getNextElementSibling(querySelector(input, ".section_h3:nth-child(1)")));
 		//
 		if (childElements != null) {
 			//
@@ -220,6 +219,71 @@ public class HankyuStation {
 			//
 		return equipments;
 		//
+	}
+
+	private static DomElement getNextElementSibling(final DomNode instance) {
+		return instance != null ? instance.getNextElementSibling() : null;
+	}
+
+	private static Iterable<DomElement> getChildElements(final DomElement instance) {
+		return instance != null ? instance.getChildElements() : null;
+	}
+
+	private static List<String> getServiceFacilities(final DomNode input) {
+		//
+		List<String> serviceFacilities = null;
+		//
+		final Iterable<DomElement> childElements = getChildElements(
+				getNextElementSibling(querySelector(input, ".section_h3:nth-child(3)")));
+		//
+		if (childElements != null) {
+			//
+			List<DomNode> childNodes = null;
+			String altAttribute = null;
+			HtmlImage htmlImage = null;
+			//
+			Iterable<DomNode> children = null;
+			//
+			for (final DomElement childElement : childElements) {
+				//
+				if (childElement == null) {
+					continue;
+				}
+				//
+				for (int i = 0; (childNodes = childElement.getChildNodes()) != null && i < childNodes.size(); i++) {
+					//
+					if ((children = getChildren(cast(HtmlAnchor.class, childNodes.get(i)))) == null) {
+						continue;
+					} // skip null
+						//
+					for (final DomNode child : children) {
+						//
+						if ((htmlImage = cast(HtmlImage.class, child)) == null) {
+							continue;
+						}
+						//
+						if (serviceFacilities == null) {
+							serviceFacilities = new ArrayList<>();
+						}
+						//
+						if (!serviceFacilities.contains(altAttribute = htmlImage.getAltAttribute())) {
+							serviceFacilities.add(altAttribute);
+						}
+						//
+					} // for
+						//
+				} // for
+					//
+			} // for
+				//
+		} // if
+			//
+		return serviceFacilities;
+		//
+	}
+
+	private static final Iterable<DomNode> getChildren(final DomNode instance) {
+		return instance != null ? instance.getChildren() : null;
 	}
 
 	private static String getTextContent(final Node instance) {
